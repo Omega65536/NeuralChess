@@ -31,8 +31,11 @@ class NeuralEngine:
                 self.children[move].expand(pv[1:])
                 return
 
+            if self.board.is_checkmate() or self.board.is_stalemate() or self.board.is_insufficient_material():
+                return
+
             num_moves = len(self.policy)
-            threshold = 0.03
+            threshold = 0.04
             for move, p in self.policy.items():
                 if p <= threshold: continue
 
@@ -62,8 +65,8 @@ class NeuralEngine:
         iterations = 0
         while time.time() < startTime + maxTime:
             iterations += 1
-            mm = self.root.minimax(0.1)
-            print(f"ITER: {iterations:<4}\tEVAL: {mm[0]: .2f}\tPV: {' '.join([str(i) for i in mm[1]])}")
+            mm = self.root.minimax(0.0)
+            print(f"ITER: {iterations:<4}\tEVAL: {mm[0]: .2f}\tDEPTH: {len(mm[1]):<4}\tPV: {' '.join([str(i) for i in mm[1]])}")
             self.root.expand(mm[1])
 
         mm = self.root.minimax(0)
@@ -73,7 +76,11 @@ class NeuralEngine:
     def output(self):
         self.root.output()
 
-def getEval(board, net = bg_net):
+def getEval(board, net = gg_net):
+    if board.is_checkmate():
+        return [], -1
+    if board.is_stalemate() or board.is_insufficient_material():
+        return [], 0
     return net.eval(board, softmax_temp = 1.61)
 
 if __name__ == '__main__':
@@ -85,10 +92,12 @@ if __name__ == '__main__':
         board.push(chess.Move.from_uci(mm[1][0]))
         print(board)
         while True:
+            inp = input()
             try:
-                board.push(chess.Move.from_uci(input()))
+                board.push(chess.Move.from_uci(inp))
                 break
             except:
+                if inp == "exit": break
                 print("Invalid move")
                 pass
     print(board)
