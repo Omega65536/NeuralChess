@@ -9,16 +9,15 @@ import sys
 import os.path
 from badgyal import AbstractNet
 
-CHANNELS = 16
-BLOCKS = 2
-SE = 1
-
-class MainNet(AbstractNet):
+class Net10x128(AbstractNet):
     def __init__(self, cuda=True, torchScript=False):
         super().__init__(cuda=cuda, torchScript=torchScript)
 
     def load_net(self):
-        FILE = "tinygyal-8.pb.gz"
-        net = model.Net(CHANNELS, BLOCKS, CHANNELS, SE, classical=True)
+        FILE = "custom_nets/LS15-20x256SE-jj-9-75000000.pb.gz"
+        FILTERS = 256
+        BLOCKS = 20
+        SE = 16
+        net = model.Net(FILTERS, BLOCKS, FILTERS, SE, classical=True)
         net.import_proto_classical(FILE)
         return net
