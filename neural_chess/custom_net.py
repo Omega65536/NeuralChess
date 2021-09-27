@@ -14,10 +14,11 @@ class Net10x128(AbstractNet):
         super().__init__(cuda=cuda, torchScript=torchScript)
 
     def load_net(self):
-        FILE = "custom_nets/LS15-20x256SE-jj-9-75000000.pb.gz"
-        FILTERS = 256
-        BLOCKS = 20
-        SE = 16
+        FILE = "custom_nets/weights_run2_744701.pb.gz"
+        FILTERS = 128
+        BLOCKS = 10
+        SE = 2
+
         net = model.Net(FILTERS, BLOCKS, FILTERS, SE, classical=True)
         net.import_proto_classical(FILE)
         return net
